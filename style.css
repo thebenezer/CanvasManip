@@ -9,12 +9,17 @@ body{
 }
 .content{
     text-align: center;
-    color: aliceblue;
+    color: #f1eeee;
 }
 .content h1{
     padding: 20px;
 }
+.settings{
+    position: absolute;
+    right: 0;
+    padding-right: 50px;
+}
 #canvas {
     cursor: crosshair;
-    background-color: #ffffff;
+    background-color: #f1eeee;
 }
