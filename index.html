@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Canvas</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+        <div class="content">
+            <h1>Simple Paint App</h1>
+            <canvas id="canvas"></canvas>    
+        </div>
+
+		<script type="module">
+            var Rectangles=[];
+            var prevRect=[0,0,0,0];
+            var startPos = {x:0,y:0};
+            // get canvas and context
+            const canvasEle = document.getElementById( 'canvas' );
+            canvasEle.width= window.innerWidth-100;
+            canvasEle.height= window.innerHeight-100;
+            const drawingContext = canvasEle.getContext( '2d' );
+            // drawingContext.globalAlpha=0.2;
+            setupCanvasDrawing();
+
+            function setupCanvasDrawing() {
+
+                // draw white background
+                drawingContext.fillStyle = '#FFFFFF';
+                drawingContext.fillRect( 0, 0, canvasEle.width,canvasEle.height  );
+
+                // set the variable to keep track of when to draw
+                let paint = false;
+
+                // add canvas event listeners
+                canvasEle.addEventListener( 'pointerdown', function ( e ) {
+                    paint = true;
+                    startPos={x:e.offsetX,y:e.offsetY};
+
+                } );
+
+                canvasEle.addEventListener( 'pointermove', function ( e ) {
+                    if ( paint ) drawOutline(  e.offsetX, e.offsetY );
+                } );
+
+                canvasEle.addEventListener( 'pointerup', function (e) {
+                    if ( paint ) draw(  e.offsetX, e.offsetY );
+                    paint = false;
+                } );
+                canvasEle.addEventListener( 'pointerleave', function () {
+                    paint = false;
+                } );
+            }
+
+            function draw(  xx, yy ) {
+                var endx = (xx - startPos.x);
+                var endy = (yy - startPos.y);
+                var randomColor = Math.floor(Math.random()*16777215).toString(16);
+                console.log(randomColor)
+                drawingContext.globalAlpha = 1;
+                drawingContext.fillStyle = '#'+randomColor+'';
+                drawingContext.fillRect(startPos.x,startPos.y,endx,endy);
+                // draw a new rect from the start position 
+                // to the final mouse position
+                drawingContext.strokeRect(startPos.x,startPos.y,endx,endy);
+                
+                Rectangles.push([startPos.x,startPos.y,endx,endy,randomColor]);
+                startPos={x:xx,y:yy};
+
+            }
+      
+            function drawOutline(xx, yy ) {
+
+                // Make sure that all previous rectangles are not erased
+                Rectangles.forEach(rectangle => {
+                    drawingContext.fillStyle = '#'+rectangle[4];
+                    drawingContext.fillRect(rectangle[0],rectangle[1],rectangle[2],rectangle[3]);
+                    drawingContext.strokeRect(rectangle[0],rectangle[1],rectangle[2],rectangle[3]);
+                });
+
+                //
+                drawingContext.clearRect(prevRect[0],prevRect[1],prevRect[2],prevRect[3]);
+                
+                // draw a new rect from the start position 
+                // to the current mouse position
+                var endx = (xx - startPos.x);
+                var endy = (yy - startPos.y);
+                drawingContext.fillStyle = '#cce6ff';
+                drawingContext.fillRect(startPos.x,startPos.y,endx,endy);
+                prevRect=[startPos.x,startPos.y,endx,endy];
+            }
+
+		</script>
+	</body>
+</html>

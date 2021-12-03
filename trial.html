@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Image Board</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<style>
+			#drawing-canvas {
+				/* position: absolute; */
+				background-color: #fffafa;
+				/* top: 50px; */
+				/* right: 50px; */
+				margin-top: 50px;
+				z-index: 3000;
+				cursor: crosshair;
+				touch-action: none;
+			}
+            body{
+                background-color: #3b3535;
+            }
+		</style>
+	</head>
+	<body>
+
+
+        <canvas id="drawing-canvas" height="128" width="128"></canvas>
+
+
+		<script type="module">
+            
+            if(window.addEventListener) {
+window.addEventListener('load', function () {
+  var canvas, context;
+
+  // The active tool instance.
+
+  function init () {
+    // Find the canvas element.
+    canvas = document.getElementById('drawing-canvas');
+    if (!canvas) {
+      alert('Error: I cannot find the canvas element!');
+      return;
+    }
+
+    if (!canvas.getContext) {
+      alert('Error: no canvas.getContext!');
+      return;
+    }
+
+    // Get the 2D canvas context.
+    context = canvas.getContext('2d');
+    if (!context) {
+      alert('Error: failed to getContext!');
+      return;
+    }
+
+
+
+    // Attach the mousedown, mousemove and mouseup event listeners.
+    canvas.addEventListener('mousedown', ev_canvas, false);
+    canvas.addEventListener('mousemove', ev_canvas, false);
+    canvas.addEventListener('mouseup',   ev_canvas, false);
+  }
+
+  // The general-purpose event handler. This function just determines the mouse 
+  // position relative to the canvas element.
+  function ev_canvas (ev) {
+    if (ev.layerX || ev.layerX == 0) { // Firefox
+      ev._x = ev.layerX;
+      ev._y = ev.layerY;
+    } else if (ev.offsetX || ev.offsetX == 0) { // Opera
+      ev._x = ev.offsetX;
+      ev._y = ev.offsetY;
+    }
+
+    // Call the event handler of the tool.
+    var func = tool[ev.type];
+    if (func) {
+      func(ev);
+    }
+  }
+
+  // The rectangle tool.
+  tools.rect = function () {
+    var tool = this;
+    started = false;
+
+    this.mousedown = function (ev) {
+      tool.started = true;
+      tool.x0 = ev._x;
+      tool.y0 = ev._y;
+    };
+
+    this.mousemove = function (ev) {
+      if (!tool.started) {
+        return;
+      }
+
+      var x = Math.min(ev._x,  tool.x0),
+          y = Math.min(ev._y,  tool.y0),
+          w = Math.abs(ev._x - tool.x0),
+          h = Math.abs(ev._y - tool.y0);
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (!w || !h) {
+        return;
+      }
+
+      context.strokeRect(x, y, w, h);
+    };
+
+    this.mouseup = function (ev) {
+      if (tool.started) {
+        tool.mousemove(ev);
+        tool.started = false;
+      }
+    };
+  };
+
+  init();
+
+}, false); }
+
+		</script>
+	</body>
+</html>
+
