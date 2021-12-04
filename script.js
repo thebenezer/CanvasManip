@@ -1,6 +1,6 @@
 
-var Rectangles=[];// 2D Array containing all the rectangles added to the canvas(x,y,width,height,color,dragged)
-var prevRect=[0,0,0,0];
+let Rectangles=[];// 2D Array containing all the rectangles added to the canvas(x,y,width,height,color,dragged)
+let prevRect=[0,0,0,0];
 // get canvas and context
 const canvasEle = document.getElementById( 'canvas' );
 canvasEle.width= window.innerWidth-100;
@@ -97,7 +97,7 @@ function draw(  xx, yy ) {
     
     // draw a new rect from the start position 
     // to the final mouse position
-    var endx,endy;
+    let endx,endy;
     endx = Math.abs(startPos.x- xx  );
     endy = Math.abs(startPos.y- yy  );
     if (xx<startPos.x) {
@@ -107,7 +107,7 @@ function draw(  xx, yy ) {
         startPos.y=yy;
     }
 
-    var randomColor = Math.floor(Math.random()*16777215).toString(16);
+    let randomColor = Math.floor(Math.random()*16777215).toString(16);
     console.log(randomColor)
     drawingContext.fillStyle = '#'+randomColor+'';
     drawingContext.fillRect(startPos.x,startPos.y,endx,endy);
@@ -127,8 +127,8 @@ function drawOutline(xx, yy ) {
     
     // draw a new rect from the start position 
     // to the current mouse position
-    var endx = (xx - startPos.x);
-    var endy = (yy - startPos.y);
+    let endx = (xx - startPos.x);
+    let endy = (yy - startPos.y);
     drawingContext.fillStyle = '#cce6ff';
     drawingContext.fillRect(startPos.x,startPos.y,endx,endy);
     prevRect=[startPos.x,startPos.y,endx,endy];
