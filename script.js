@@ -13,6 +13,20 @@ setupListeners();
 
 function setupListeners() {
     // event listeners
+    canvasEle.addEventListener( 'dblclick', function (e) {
+        // e.preventDefault;
+        cx=e.offsetX;
+        cy=e.offsetY;
+        for (let i=0;i<Rectangles.length;i++){
+            r=Rectangles[i];
+            if(cx>r[0] && cx<r[2]+r[0] && cy>r[1] && cy<r[3]+r[1])
+            {
+                Rectangles.splice(i,1);
+                break;
+            }
+        };
+        redrawCanvas();
+    } );
     canvasEle.addEventListener( 'pointerdown', function ( e ) {
         // check if cursor position(cx,cy) is on any previous rectangle
         cx=e.offsetX;
@@ -20,7 +34,7 @@ function setupListeners() {
         startPos={x:cx,y:cy};        
         for (let i=0;i<Rectangles.length;i++){
             r=Rectangles[i];
-            if(cx>r[0] && cx<r[2]+r[0] && cy<r[1] && cy>r[3]+r[1])
+            if(cx>r[0] && cx<r[2]+r[0] && cy>r[1] && cy<r[3]+r[1])
             {
                 drag=i;
             }
@@ -33,6 +47,18 @@ function setupListeners() {
     canvasEle.addEventListener( 'pointermove', function ( e ) {
         if ( paint ) drawOutline(  e.offsetX, e.offsetY );
         else if(drag>-1) dragRect(e.offsetX,e.offsetY,drag);
+        // else{
+        //     cx=e.offsetX;
+        // cy=e.offsetY;
+        // startPos={x:cx,y:cy};        
+        // for (let i=0;i<Rectangles.length;i++){
+        //     r=Rectangles[i];
+        //     if(cx>r[0] && cx<r[2]+r[0] && cy>r[1] && cy<r[3]+r[1])
+        //     {
+        //         console.log("Yes"+Rectangles.length);
+        //     }
+        // };
+        // }
     } );
 
     canvasEle.addEventListener( 'pointerup', function (e) {
@@ -50,28 +76,20 @@ function setupListeners() {
         paint = false;
         drag= -1;
     } );
-    canvasEle.addEventListener( 'dblclick', function (e) {
-        cx=e.offsetX;
-        cy=e.offsetY;
-        for (let i=0;i<Rectangles.length;i++){
-            r=Rectangles[i];
-            if(cx>r[0] && cx<r[2]+r[0] && cy<r[1] && cy>r[3]+r[1])
-            {
-                Rectangles.splice(i,1);
-            }
-        };
-        redrawCanvas();
-    } );
+    
 }
 
 function dragRect(currX,currY) {
-    xDis=startPos.x-currX;
-    yDis=startPos.y-currY;
-    startPos={x:currX,y:currY};    
-    Rectangles[drag][0]-=xDis;
-    Rectangles[drag][1]-=yDis;
-    Rectangles.push(Rectangles.splice(drag,1)[0]);//Making the current rect come to the top
-    drag=Rectangles.length-1;
+    if (drag!=-1) {
+        xDis=startPos.x-currX;
+        yDis=startPos.y-currY;
+        startPos={x:currX,y:currY};    
+        Rectangles[drag][0]-=xDis;
+        Rectangles[drag][1]-=yDis;
+        Rectangles.push(Rectangles.splice(drag,1)[0]);//Making the current rect come to the top
+        drag=Rectangles.length-1;    
+    }
+    
     redrawCanvas();
 }
 
@@ -79,17 +97,24 @@ function draw(  xx, yy ) {
     
     // draw a new rect from the start position 
     // to the final mouse position
-    var endx = (xx - startPos.x);
-    var endy = (yy - startPos.y);
+    var endx,endy;
+    endx = Math.abs(startPos.x- xx  );
+    endy = Math.abs(startPos.y- yy  );
+    if (xx<startPos.x) {
+        startPos.x=xx;
+    }
+    if (yy<startPos.y) {
+        startPos.y=yy;
+    }
+
     var randomColor = Math.floor(Math.random()*16777215).toString(16);
     console.log(randomColor)
-    drawingContext.globalAlpha = 1;
     drawingContext.fillStyle = '#'+randomColor+'';
     drawingContext.fillRect(startPos.x,startPos.y,endx,endy);
     drawingContext.strokeRect(startPos.x,startPos.y,endx,endy);
     
     //adding drawn rectangles to array
-    Rectangles.push([startPos.x,startPos.y,endx,endy,randomColor,0]);
+    Rectangles.push([startPos.x,startPos.y,endx,endy,randomColor]);
     // startPos={x:0,y:0};
 
 }
